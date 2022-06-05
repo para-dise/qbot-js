@@ -4,7 +4,7 @@ QBot-JS is a NodeJS implementation of the [QBot](https://github.com/geniosa/qbot
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+Make sure you have NodeJS and NPM installed
 
 ```bash
 npm install -g typescript # Install TypeScript
