@@ -90,7 +90,7 @@ function create_and_bind(port : number) {
         }
         if(resolved) return;
 
-        let report = data.toString().split(' ');
+        let report = data.toString().trim().split(' ');
         if(report.length == 2) { // perhaps a limit/validation here would be nice for the str size etc
           telFD(`${report[1]}\n`);
           TELFound++;
