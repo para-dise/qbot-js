@@ -43,7 +43,11 @@ function TitleWriter(socket) {
 
 const broadcast = async (msg) => {
   clients.forEach((client) => {
-      client.socket.write(msg);
+      try {
+          client.socket.write(msg);
+      } catch(e) {
+          //removeClient(client.socket); optional
+      }
   });
 };
 
