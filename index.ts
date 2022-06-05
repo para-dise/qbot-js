@@ -97,8 +97,8 @@ function create_and_bind(port : number) {
         }
       })
   }).listen(port);
-  
-  botserver.on("listeing", () => {
+
+  botserver.on("listening", () => {
     setInterval(() => broadcast("PING\n"), 60000);
   });
 }
